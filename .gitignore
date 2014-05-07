@@ -1,0 +1,11 @@
+.depend
+Makefile
+*.css
+*.gif
+*.glob
+*.html
+*.jpg
+*.js
+*.map
+*.vo
+*.v.d

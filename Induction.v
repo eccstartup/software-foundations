@@ -254,7 +254,11 @@ Proof.
 Theorem plus_assoc : forall n m p : nat,
   n + (m + p) = (n + m) + p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p. induction p as [| p'].
+  Case "p = 0". rewrite -> plus_0_r. rewrite -> plus_0_r. reflexivity.
+  Case "p = S p'". rewrite <- plus_n_Sm. rewrite <- plus_n_Sm.
+    rewrite <- plus_n_Sm. rewrite -> IHp'. reflexivity.
+  Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (double_plus) *)
@@ -270,8 +274,11 @@ Fixpoint double (n:nat) :=
 (** Use induction to prove this simple fact about [double]: *)
 
 Lemma double_plus : forall n, double n = n + n .
-Proof.  
-  (* FILL IN HERE *) Admitted.
+Proof.
+  intros n. induction n as [| n'].
+  reflexivity. simpl. rewrite -> IHn'. rewrite <- plus_n_Sm.
+  reflexivity.
+  Qed.
 (** [] *)
 
 

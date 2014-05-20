@@ -776,7 +776,13 @@ Proof.
 Theorem distr_rev : forall l1 l2 : natlist,
   rev (l1 ++ l2) = (rev l2) ++ (rev l1).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2. induction l1 as [|n l'].
+  Case "l1 = nil".
+    simpl. rewrite app_nil_end. reflexivity.
+  Case "l1 = cons".
+    simpl. rewrite IHl'. rewrite snoc_append. rewrite snoc_append.
+    rewrite app_ass. reflexivity.
+  Qed.
 
 (** An exercise about your implementation of [nonzeros]: *)
 

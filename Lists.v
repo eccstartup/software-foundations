@@ -759,12 +759,18 @@ Proof.
 Theorem app_ass4 : forall l1 l2 l3 l4 : natlist,
   l1 ++ (l2 ++ (l3 ++ l4)) = ((l1 ++ l2) ++ l3) ++ l4.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2 l3 l4.
+  rewrite app_ass. rewrite app_ass. reflexivity. Qed.
 
 Theorem snoc_append : forall (l:natlist) (n:nat),
   snoc l n = l ++ [n].
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l n. induction l as [| m l'].
+  Case "l = nil".
+    simpl. reflexivity.
+  Case "l = cons".
+    simpl. rewrite -> IHl'. reflexivity.
+  Qed.
 
 
 Theorem distr_rev : forall l1 l2 : natlist,

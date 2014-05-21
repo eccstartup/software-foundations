@@ -789,7 +789,14 @@ Proof.
 Lemma nonzeros_app : forall l1 l2 : natlist,
   nonzeros (l1 ++ l2) = (nonzeros l1) ++ (nonzeros l2).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2. induction l1 as [|n l'].
+  Case "l1 = nil".
+    simpl. reflexivity.
+  Case "l1 = cons".
+    simpl. rewrite IHl'. destruct n.
+      reflexivity.
+      simpl. reflexivity.
+  Qed.
 (** [] *)
 
 (* ###################################################### *)
@@ -811,7 +818,8 @@ Proof.
 Theorem count_member_nonzero : forall (s : bag),
   ble_nat 1 (count 1 (1 :: s)) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros s.
+  simpl. reflexivity. Qed.
 
 (** The following lemma about [ble_nat] might help you in the next proof. *)
 
@@ -827,7 +835,16 @@ Proof.
 Theorem remove_decreases_count: forall (s : bag),
   ble_nat (count 0 (remove_one 0 s)) (count 0 s) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros s. induction s as [|n s'].
+  Case "s = nil".
+    simpl. reflexivity.
+  Case "s = cons".
+    simpl. destruct n.
+    SCase "n = 0".
+      simpl. rewrite ble_n_Sn. reflexivity.
+    SCase "n = S n'".
+      simpl. rewrite IHs'. reflexivity.
+  Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (bag_count_sum) *)  
@@ -927,16 +944,19 @@ Definition option_elim (d : nat) (o : natoption) : nat :=
    have to pass a default element for the [nil] case.  *)
 
 Definition hd_opt (l : natlist) : natoption :=
-  (* FILL IN HERE *) admit.
+  match l with
+  | h :: t => Some h
+  | nil => None
+  end.
 
 Example test_hd_opt1 : hd_opt [] = None.
- (* FILL IN HERE *) Admitted.
+ Proof. reflexivity.  Qed.
 
 Example test_hd_opt2 : hd_opt [1] = Some 1.
- (* FILL IN HERE *) Admitted.
+ Proof. reflexivity.  Qed.
 
 Example test_hd_opt3 : hd_opt [5;6] = Some 5.
- (* FILL IN HERE *) Admitted.
+ Proof. reflexivity.  Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, optional (option_elim_hd) *)
@@ -945,7 +965,9 @@ Example test_hd_opt3 : hd_opt [5;6] = Some 5.
 Theorem option_elim_hd : forall (l:natlist) (default:nat),
   hd default l = option_elim default (hd_opt l).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l default.
+  destruct l. simpl. reflexivity.
+  simpl. reflexivity. Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (beq_natlist) *)
@@ -954,19 +976,35 @@ Proof.
     yields [true] for every list [l]. *)
 
 Fixpoint beq_natlist (l1 l2 : natlist) : bool :=
-  (* FILL IN HERE *) admit.
+  match l1 with
+  | h1 :: t1 => match l2 with
+                | h2 :: t2 => andb (beq_nat h1 h2) (beq_natlist t1 t2)
+                | nil => false
+                end
+  | nil      => match l2 with
+                | h2 :: t2 => false
+                | nil => true
+                end
+  end.
 
 Example test_beq_natlist1 :   (beq_natlist nil nil = true).
- (* FILL IN HERE *) Admitted.
+  Proof. reflexivity.  Qed.
 Example test_beq_natlist2 :   beq_natlist [1;2;3] [1;2;3] = true.
- (* FILL IN HERE *) Admitted.
+  Proof. reflexivity.  Qed.
 Example test_beq_natlist3 :   beq_natlist [1;2;3] [1;2;4] = false.
- (* FILL IN HERE *) Admitted.
+  Proof. reflexivity.  Qed.
+
+SearchAbout beq_nat.
 
 Theorem beq_natlist_refl : forall l:natlist,
   true = beq_natlist l l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l. induction l as [| l'].
+  Case "l = nil".
+    reflexivity.
+  Case "l = cons".
+    simpl. rewrite <- IHl. rewrite <- beq_nat_refl. simpl. reflexivity.
+  Qed.
 (** [] *)
 
 (* ###################################################### *)

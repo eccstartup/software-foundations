@@ -360,35 +360,55 @@ Definition list123''' := [1; 2; 3].
     and complete the proofs below. *)
 
 Fixpoint repeat {X : Type} (n : X) (count : nat) : list X :=
-  (* FILL IN HERE *) admit.
+  match count with
+  | 0 => []
+  | S i => n :: repeat n i
+  end. 
 
 Example test_repeat1:
   repeat true 2 = cons true (cons true nil).
- (* FILL IN HERE *) Admitted.
+ Proof. reflexivity. Qed.
 
 Theorem nil_app : forall X:Type, forall l:list X,
   app [] l = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A l. simpl. reflexivity. Qed.
 
 Theorem rev_snoc : forall X : Type,
                      forall v : X,
                      forall s : list X,
   rev (snoc s v) = v :: (rev s).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X v s.
+  induction s as [|n s'].
+  Case "s = nil".
+    simpl. reflexivity.
+  Case "s = cons".
+    simpl. rewrite IHs'. simpl. reflexivity.
+  Qed.
 
 Theorem rev_involutive : forall X : Type, forall l : list X,
   rev (rev l) = l.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros X l.
+  induction l as [|n l'].
+  Case "l = nil".
+    simpl. reflexivity.
+  Case "l = cons".
+    simpl. rewrite rev_snoc. rewrite IHl'. reflexivity.
+  Qed.
 
 Theorem snoc_with_append : forall X : Type,
                          forall l1 l2 : list X,
                          forall v : X,
   snoc (l1 ++ l2) v = l1 ++ (snoc l2 v).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X l1 l2 v. induction l1 as [|n l'].
+  Case "l1 = nil".
+    simpl. reflexivity.
+  Case "l1 = cons".
+    simpl. rewrite IHl'. reflexivity.
+  Qed.
 (** [] *)
 
 (* ###################################################### *)
@@ -468,12 +488,14 @@ Fixpoint combine {X Y : Type} (lx : list X) (ly : list Y)
 Fixpoint split
            {X Y : Type} (l : list (X*Y))
            : (list X) * (list Y) :=
-(* FILL IN HERE *) admit.
+  match l with
+  | nil => (nil, nil)
+  | (x, y) :: t => (x :: (fst (split t)), y :: (snd (split t)))
+  end.
 
 Example test_split:
   split [(1,false);(2,false)] = ([1;2],[false;false]).
-Proof.
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (* ###################################################### *)

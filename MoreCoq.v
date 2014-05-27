@@ -68,7 +68,9 @@ Theorem silly_ex :
      evenb 3 = true ->
      oddb 4 = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros eq1.
+  apply eq1.
+  Qed.
 (** [] *)
 
 (** To use the [apply] tactic, the (conclusion of the) fact
@@ -107,8 +109,9 @@ Theorem rev_exercise1 : forall (l l' : list nat),
      l = rev l' ->
      l' = rev l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l l' H. rewrite H. symmetry. apply rev_involutive. Qed.
 (** [] *)
+
 
 (** **** Exercise: 1 star, optional (apply_rewrite) *)
 (** Briefly explain the difference between the tactics [apply] and
@@ -174,7 +177,10 @@ Example trans_eq_exercise : forall (n m o p : nat),
      (n + p) = m ->
      (n + p) = (minustwo o). 
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m o p eq1 eq2.
+  symmetry.
+  (* rewrite eq2. apply eq1. Qed. *)
+  apply trans_eq with (m:=m). symmetry. apply eq1. symmetry. apply eq2. Qed.
 (** [] *)
 
 
@@ -260,7 +266,7 @@ Example sillyex1 : forall (X : Type) (x y z : X) (l j : list X),
      y :: l = x :: j ->
      x = y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x y z l j eq1 eq2. inversion eq2. reflexivity. Qed.
 (** [] *)
 
 Theorem silly6 : forall (n : nat),
@@ -281,7 +287,7 @@ Example sillyex2 : forall (X : Type) (x y z : X) (l j : list X),
      y :: l = z :: j ->
      x = z.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x y z l j eq1 eq2. inversion eq1. Qed.
 (** [] *)
 
 (** While the injectivity of constructors allows us to reason
@@ -316,17 +322,18 @@ Proof.
 (** A couple more nontrivial but not-too-complicated proofs to work
     together in class, or for you to work as exercises.  They may
     involve applying lemmas from earlier lectures or homeworks. *)
- 
+
+SearchAbout beq_nat.
 
 Theorem beq_nat_0_l : forall n,
    beq_nat 0 n = true -> n = 0.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n H. destruct n. reflexivity. inversion H. Qed.
 
 Theorem beq_nat_0_r : forall n,
    beq_nat n 0 = true -> n = 0.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n H. destruct n. reflexivity. inversion H. Qed.
 (** [] *)
 
 
@@ -390,8 +397,21 @@ Theorem plus_n_n_injective : forall n m,
      n = m.
 Proof.
   intros n. induction n as [| n'].
+  Case "n = 0".
+    intros. simpl in H. rewrite H. destruct m as [| m'].
+    SCase "m = 0".
+      simpl. reflexivity.
+    SCase "m = S m'".
+      inversion H.
+  Case "n = S n'".
+    intros. simpl in H. rewrite <- plus_n_Sm in H. destruct m as [| m'].
+    SCase "m = 0".
+      simpl in H. inversion H.
+    SCase "m = S m'".
+      simpl in H. rewrite <- plus_n_Sm in H. inversion H.
+      apply IHn' in H1. rewrite H1. reflexivity.
+Qed.
     (* Hint: use the plus_n_Sm lemma *)
-    (* FILL IN HERE *) Admitted.
 (** [] *)
 
 (* ###################################################### *)

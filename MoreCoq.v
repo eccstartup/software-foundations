@@ -557,7 +557,17 @@ Proof.
 Theorem beq_nat_true : forall n m,
     beq_nat n m = true -> n = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [| n'].
+  Case "n = 0".
+    intros m eq. destruct m as [| m'].
+    SCase "m = 0". reflexivity.
+    SCase "m = S m'". inversion eq.
+  Case "n = S n'".
+    intros m eq. destruct m as [| m'].
+    SCase "m = 0". inversion eq.
+    SCase "m = S m'".
+      apply f_equal. apply IHn'. inversion eq. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, advanced (beq_nat_true_informal) *)
@@ -673,7 +683,14 @@ Theorem index_after_last: forall (n : nat) (X : Type) (l : list X),
      length l = n ->
      index n l = None.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n X l. generalize dependent n. induction l as [| x l'].
+  Case "l = nil".
+    intros n eq. simpl. reflexivity.
+  Case "l = cons".
+    intros n eq. destruct n.
+    SCase "n = 0". simpl. inversion eq.
+    SCase "n = S n'". simpl. apply IHl'. inversion eq. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced, optional (index_after_last_informal) *)

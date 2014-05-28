@@ -713,7 +713,12 @@ Theorem length_snoc''' : forall (n : nat) (X : Type)
      length l = n ->
      length (snoc l v) = S n. 
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n X v l. generalize dependent n. induction l as [| w l'].
+  Case "l = nil".
+    intros n eq. simpl. inversion eq. simpl. reflexivity.
+  Case "l = cons".
+    intros n eq. simpl. apply f_equal. inversion eq. simpl. apply IHl'. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (app_length_cons) *)
@@ -724,8 +729,25 @@ Theorem app_length_cons : forall (X : Type) (l1 l2 : list X)
      length (l1 ++ (x :: l2)) = n ->
      S (length (l1 ++ l2)) = n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X l1 l2 x. induction l1 as [| a l1'].
+  Case "l1 = nil".
+    intros n eq. simpl in eq. simpl. apply eq.
+  Case "l1 = cons".
+    intros n eq. simpl. simpl in eq. inversion eq. apply f_equal. apply IHl1'. reflexivity.
+Qed.
 (** [] *)
+
+Theorem app_length_cons_2 : forall (X : Type) (l1 l2 : list X) 
+                                  (x : X) (n : nat),
+     S (length (l1 ++ l2)) = n ->
+     length (l1 ++ (x :: l2)) = n.
+Proof.
+  intros X l1 l2 x. induction l1 as [| a l1'].
+  Case "l1 = nil".
+    intros n eq. simpl in eq. simpl. apply eq.
+  Case "l1 = cons".
+    intros n eq. simpl. simpl in eq. inversion eq. apply f_equal. apply IHl1'. reflexivity.
+Qed.
 
 (** **** Exercise: 4 stars, optional (app_length_twice) *)
 (** Prove this by induction on [l], without using app_length. *)
@@ -734,7 +756,18 @@ Theorem app_length_twice : forall (X:Type) (n:nat) (l:list X),
      length l = n ->
      length (l ++ l) = n + n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X n l. generalize dependent n. induction l as [| a l'].
+  Case "l = nil".
+    intros n eq. simpl. inversion eq. simpl. reflexivity.
+  Case "l = cons".
+    intros n eq. destruct n as [| n'].
+    SCase "n = 0".
+      simpl. inversion eq.
+    SCase "n = S n'".
+      simpl. rewrite <- plus_n_Sm. rewrite <- IHl'.
+      apply f_equal. apply app_length_cons_2. reflexivity.
+      inversion eq. reflexivity.
+Qed.
 (** [] *)
 
 (* ###################################################### *)

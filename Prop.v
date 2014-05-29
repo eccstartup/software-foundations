@@ -207,7 +207,8 @@ Inductive gorgeous : nat -> Prop :=
 Theorem gorgeous_plus13: forall n, 
   gorgeous n -> gorgeous (13+n).
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros n H. simpl. apply g_plus5. apply g_plus5. apply g_plus3. apply H.
+Qed.
 (** [] *)
 
 (** It seems intuitively obvious that, although [gorgeous] and
@@ -257,28 +258,55 @@ Abort.
 Theorem gorgeous_sum : forall n m,
   gorgeous n -> gorgeous m -> gorgeous (n + m).
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros n m H1 H2. induction H1.
+  Case "g_0".
+    simpl. apply H2.
+  Case "g_3".
+    simpl. apply g_plus3. apply IHgorgeous.
+  Case "g_5".
+    simpl. apply g_plus5. apply IHgorgeous.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced (beautiful__gorgeous) *)
 Theorem beautiful__gorgeous : forall n, beautiful n -> gorgeous n.
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros n H. induction H.
+                 apply g_0.
+  apply g_plus3. apply g_0.
+  apply g_plus5. apply g_0.
+  apply gorgeous_sum.
+  apply IHbeautiful1.
+  apply IHbeautiful2.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (g_times2) *)
 (** Prove the [g_times2] theorem below without using [gorgeous__beautiful].
     You might find the following helper lemma useful. *)
 
+(*
+SearchAbout plus.
+plus_comm
+plus_assoc
+*)
+
 Lemma helper_g_times2 : forall x y z, x + (z + y)= z + x + y.
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros x y z. assert (z + y = y + z) as H. apply plus_comm.
+  rewrite H. rewrite plus_assoc. rewrite plus_comm. rewrite plus_assoc. reflexivity.
+Qed.
 
 Theorem g_times2: forall n, gorgeous n -> gorgeous (2*n).
 Proof.
    intros n H. simpl. 
    induction H.
-   (* FILL IN HERE *) Admitted.
+   Case "g_0". simpl. apply g_0.
+   Case "g_3". simpl. apply g_plus3. apply gorgeous_sum. apply H.
+     apply g_plus3. apply gorgeous_sum. apply H. apply g_0.
+   Case "g_5". simpl. apply g_plus5. apply gorgeous_sum. apply H.
+     apply g_plus5. apply gorgeous_sum. apply H. apply g_0.
+Qed.
 (** [] *)
 
 

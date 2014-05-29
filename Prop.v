@@ -142,12 +142,20 @@ Proof.
   apply eight_is_beautiful.
   apply B.
 Qed.
-  
+
+SearchAbout mult.
 
 (** **** Exercise: 2 stars (b_timesm) *)
 Theorem b_timesm: forall n m, beautiful n -> beautiful (m*n).
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros n m. induction m as [| m']. generalize dependent n. 
+  Case "m = 0".
+    intros n eq. simpl. apply b_0. 
+  Case "m = S m'".
+    intros eq. simpl. apply b_sum.
+    SCase "beautiful n". apply eq.
+    SCase "beautifule (m' * n)". apply IHm'. apply eq.
+Qed.
 (** [] *)
 
 

@@ -813,7 +813,9 @@ Proof.
 Theorem override_shadow : forall (X:Type) x1 x2 k1 k2 (f : nat->X),
   (override (override f k1 x2) k1 x1) k2 = (override f k1 x1) k2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x1 x2 k1 k2 f.
+  unfold override. destruct (beq_nat k1 k2). reflexivity. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (combine_split) *)
@@ -823,7 +825,13 @@ Theorem combine_split : forall X Y (l : list (X * Y)) l1 l2,
   split l = (l1, l2) ->
   combine l1 l2 = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X Y l. induction l as [| [x y] l'].
+  Case "l = nil".
+    intros l1 l2 H. simpl in H. inversion H. simpl. reflexivity.
+  Case "l = cons".
+    intros l1 l2 H. simpl in H. destruct (split l') as [xs ys].
+    simpl in H. inversion H. simpl. rewrite IHl'. reflexivity. reflexivity.
+Qed.
 (** [] *)
 
 (** Sometimes, doing a [destruct] on a compound expression (a
@@ -900,7 +908,12 @@ Theorem override_same : forall (X:Type) x1 k1 k2 (f : nat->X),
   f k1 = x1 -> 
   (override f k1 x1) k2 = f k2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x1 k1 k2 f eq. unfold override. destruct (beq_nat k1 k2) eqn:k1eqk2.
+  Case "k1 = k2".
+    rewrite <- eq. apply beq_nat_true in k1eqk2. rewrite k1eqk2. reflexivity.
+  Case "k1 != k2".
+    reflexivity.
+Qed.
 (** [] *)
 
 (* ################################################################## *)
@@ -985,10 +998,23 @@ Proof.
 Theorem beq_nat_sym : forall (n m : nat),
   beq_nat n m = beq_nat m n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [| n'].
+  Case "n = 0".
+    intros m. simpl. destruct m.
+    SCase "m = 0".
+      simpl. reflexivity.
+    SCase "m = S m'".
+      simpl. reflexivity.
+  Case "n = S n'".
+    intros m. destruct m.
+    SCase "m = 0".
+      simpl. reflexivity.
+    SCase "m = S m'".
+      simpl. apply IHn'.
+Qed.
 (** [] *)
 
-(** **** Exercise: 3 stars, advanced, optional (beq_nat_sym_informal) *)
+(** **** Exercise: 3 stars, advanced, optional (beq_nat_sym_informal) *) 
 (** Give an informal proof of this lemma that corresponds to your
     formal proof above:
 

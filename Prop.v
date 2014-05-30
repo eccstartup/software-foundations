@@ -351,7 +351,12 @@ Inductive ev : nat -> Prop :=
 Theorem double_even : forall n,
   ev (double n).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n.
+  Case "n = 0".
+    simpl. apply ev_0.
+  Case "n = S n'".
+    simpl. apply ev_SS. apply IHn.
+Qed.
 (** [] *)
 
 
@@ -437,7 +442,12 @@ Qed.
 Theorem ev_sum : forall n m,
    ev n -> ev m -> ev (n+m).
 Proof. 
-  (* FILL IN HERE *) Admitted.
+  intros n m E. induction E as [| n' E'].
+  Case "ev_0".
+    intros H. rewrite plus_comm. rewrite plus_0_r. apply H.
+  Case "ev_SS".
+    intros H. simpl. apply ev_SS. apply IHE'. apply H.
+Qed.
 (** [] *)
 
 
@@ -510,7 +520,8 @@ Proof.
 Theorem SSSSev__even : forall n,
   ev (S (S (S (S n)))) -> ev n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n E. inversion E. inversion H0. apply H2.
+Qed.
 
 (** The [inversion] tactic can also be used to derive goals by showing
     the absurdity of a hypothesis. *)
@@ -518,7 +529,8 @@ Proof.
 Theorem even5_nonsense : 
   ev 5 -> 2 + 2 = 9.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros H. inversion H. inversion H1. inversion H3.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced (ev_ev__ev) *)
@@ -528,7 +540,12 @@ Proof.
 Theorem ev_ev__ev : forall n m,
   ev (n+m) -> ev n -> ev m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m Enm En. induction En as [| n' En'].
+  Case "n = 0".
+    rewrite plus_comm in Enm. rewrite plus_0_r in Enm. apply Enm.
+  Case "n = S n'".
+    simpl in Enm. inversion Enm. apply IHEn'. apply H0.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (ev_plus_plus) *)
@@ -566,8 +583,32 @@ Proof.
        forall l, pal l -> l = rev l.
 *)
 
+Inductive pal {X : Type} : (list X) -> Prop :=
+  pal_nil  : pal []
+| pal_one  : forall x, pal [x]
+| pal_cons : forall (x : X) (l : list X), pal l -> pal (snoc (cons x l) x).
 
-(* FILL IN HERE *)
+Theorem pal_append_rev : forall (X : Type) (l : list X),
+  pal (l ++ rev l).
+Proof.
+  intros X l. induction l as [| x l'].
+  Case "l = nil".
+    simpl. apply pal_nil.
+  Case "l = cons".
+    simpl. rewrite <- snoc_with_append. apply pal_cons. apply IHl'.
+Qed.
+
+Theorem pal_rev : forall (X : Type) (l : list X),
+  pal l -> l = rev l.
+Proof.
+  intros X l Ev. induction Ev.
+  Case "pal_nil".
+    simpl. reflexivity.
+  Case "pal_one".
+    simpl. reflexivity.
+  Case "pal_cons".
+    rewrite rev_snoc. simpl. apply f_equal. rewrite <- IHEv. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 5 stars, optional (palindrome_converse) *)

@@ -241,7 +241,36 @@ Inductive R : nat -> nat -> nat -> Prop :=
     [n], and [o], and vice versa?
 *)
 
-(* FILL IN HERE *)
+Theorem r_eq_plus : forall (n m o : nat),
+  R n m o -> n + m = o.
+Proof.
+  intros. induction H.
+  Case "c1". simpl. reflexivity.
+  Case "c2". simpl. apply f_equal. apply IHR.
+  Case "c3". rewrite plus_comm. simpl. apply f_equal. rewrite plus_comm. apply IHR.
+  Case "c4". simpl in IHR. rewrite plus_comm in IHR. simpl in IHR. simpl in IHR.
+    inversion IHR. apply plus_comm.
+  Case "c5". rewrite plus_comm. apply IHR.
+Qed.
+
+Theorem plus_eq_r : forall (n m o : nat),
+  n + m = o -> R n m o.
+Proof.
+  induction n as [| n'].
+  Case "n = 0".
+    induction m as [| m'].
+    SCase "m = 0". intros. simpl in H. rewrite <- H. apply c1.
+    SCase "m = S m'". intros. rewrite plus_comm in H. rewrite plus_0_r in H.
+      rewrite <- H. rewrite plus_comm in IHm'. rewrite plus_0_r in IHm'.
+      apply c3. apply IHm'. reflexivity.
+  Case "n = S n'".
+    induction m as [| m'].
+    SCase "m = 0". intros. rewrite plus_0_r in H. rewrite <- H. apply c2. apply IHn'.
+      rewrite plus_0_r. reflexivity.
+    SCase "m = S m'". intros. apply c4. simpl in H. rewrite plus_comm in H. simpl in H.
+      rewrite <- H. apply c2. apply c2. apply c3. apply c3. apply IHn'.
+      rewrite plus_comm. reflexivity.
+Qed.
 (** [] *)
 
 End R.

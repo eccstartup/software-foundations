@@ -454,7 +454,7 @@ Proof.
     intution is that [True] should be a proposition for which it is
     trivial to give evidence.) *)
 
-(* FILL IN HERE *)
+Inductive True : Prop := true_intro. 
 (** [] *)
 
 (** However, unlike [False], which we'll use extensively, [True] is
@@ -519,14 +519,16 @@ Proof.
 Theorem contrapositive : forall P Q : Prop,
   (P -> Q) -> (~Q -> ~P).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q H. unfold not. intros HQF. intros HP. apply H in HP. apply HQF in HP.
+  apply HP.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star (not_both_true_and_false) *)
 Theorem not_both_true_and_false : forall P : Prop,
   ~ (P /\ ~P).
-Proof. 
-  (* FILL IN HERE *) Admitted.
+Proof.
+  intros P. unfold not. apply contradiction_implies_anything. Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, advanced (informal_not_PNP) *)
@@ -551,7 +553,11 @@ Theorem ev_not_ev_S : forall n,
   ev n -> ~ ev (S n).
 Proof. 
   unfold not. intros n H. induction H. (* not n! *)
-  (* FILL IN HERE *) Admitted.
+  Case "ev 1 -> False".
+    intros H. inversion H.
+  Case "ev (S (S (S n))) -> False".
+    intros H2. inversion H2. apply IHev in H1. apply H1.
+Qed.
 (** [] *)
 
 (** Note that some theorems that are true in classical logic are _not_
@@ -623,15 +629,34 @@ Proof.
 Theorem false_beq_nat : forall n m : nat,
      n <> m ->
      beq_nat n m = false.
-Proof. 
-  (* FILL IN HERE *) Admitted.
+Proof.
+  intros n m H. unfold not in H. generalize dependent m.
+  induction n as [| n'].
+  Case "n = 0".
+    intros. destruct m as [| m'].
+    SCase "m = 0". simpl. apply ex_falso_quodlibet. apply H. reflexivity.
+    SCase "m = S m'". simpl. reflexivity.
+  Case "n = S n'".
+    intros. destruct m as [| m'].
+    SCase "m = 0". simpl. reflexivity.
+    SCase "m = S m'". apply IHn'. intros. apply H. rewrite H0. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (beq_nat_false) *)
 Theorem beq_nat_false : forall n m,
   beq_nat n m = false -> n <> m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. unfold not. induction n as [| n'].
+  Case "n = 0".
+    intros m H. induction m as [| m'].
+    SCase "m = 0". simpl in H. inversion H.
+    SCase "m = S m'". intros. inversion H0.
+  Case "n = S n'".
+    intros m H. induction m as [| m'].
+    SCase "m = 0". intros. inversion H0.
+    SCase "m = S m'". intros. simpl in H. apply IHn' in H. inversion H. inversion H0. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (ble_nat_false) *)

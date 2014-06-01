@@ -97,7 +97,8 @@ Proof.
 Theorem proj2 : forall P Q : Prop, 
   P /\ Q -> Q.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. inversion H. apply H1.
+Qed.
 (** [] *)
 
 Theorem and_commut : forall P Q : Prop, 
@@ -121,7 +122,8 @@ Theorem and_assoc : forall P Q R : Prop,
 Proof.
   intros P Q R H.
   inversion H as [HP [HQ HR]].
-(* FILL IN HERE *) Admitted.
+  split. split. apply HP. apply HQ. apply HR.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (even__ev) *)
@@ -134,11 +136,20 @@ Proof.
    proving the left conjunct by itself and observe where things get
    stuck.) *)
 
+SearchAbout evenb.
+
 Theorem even__ev : forall n : nat,
   (even n -> ev n) /\ (even (S n) -> ev (S n)).
 Proof.
   (* Hint: Use induction on [n]. *)
-  (* FILL IN HERE *) Admitted.
+  intros. induction n as [| n'].
+  Case "n = 0". split.
+    intros. apply ev_0.
+    intros. inversion H.
+  Case "n = S n'". split.
+    intros. apply IHn'. apply H.
+    intros. apply ev_SS. apply IHn'. inversion H. unfold even. apply H1.
+Qed.
 (** [] *)
 
 
@@ -177,13 +188,22 @@ Proof.
 
 Theorem iff_refl : forall P : Prop, 
   P <-> P.
-Proof. 
-  (* FILL IN HERE *) Admitted.
+Proof.
+  intros. unfold iff. split.
+    intros. apply H.
+    intros. apply H.
+Qed.
 
 Theorem iff_trans : forall P Q R : Prop, 
   (P <-> Q) -> (Q <-> R) -> (P <-> R).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q R HPQ HQR.
+  inversion HPQ.
+  inversion HQR.
+  unfold iff. split.
+  intros. apply H in H3. apply H1 in H3. apply H3.
+  intros. apply H2 in H3. apply H0 in H3. apply H3.
+Qed.
 
 (** Hint: If you have an iff hypothesis in the context, you can use
     [inversion] to break it into two separate implications.  (Think
@@ -274,14 +294,22 @@ Proof.
 Theorem or_distributes_over_and_2 : forall P Q R : Prop,
   (P \/ Q) /\ (P \/ R) -> P \/ (Q /\ R).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q R. intros H. inversion H as [[HP | HQ] [HP' | HR]].
+  apply or_introl. apply HP.
+  apply or_introl. apply HP.
+  apply or_introl. apply HP'.
+  apply or_intror. split. apply HQ. apply HR.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, optional (or_distributes_over_and) *)
 Theorem or_distributes_over_and : forall P Q R : Prop,
   P \/ (Q /\ R) <-> (P \/ Q) /\ (P \/ R).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q R. split.
+  apply or_distributes_over_and_1.
+  apply or_distributes_over_and_2.
+Qed.
 (** [] *)
 
 (* ################################################### *)
@@ -318,18 +346,46 @@ Proof.
 (** **** Exercise: 2 stars, optional (bool_prop) *)
 Theorem andb_false : forall b c,
   andb b c = false -> b = false \/ c = false.
-Proof. 
-  (* FILL IN HERE *) Admitted.
+Proof.
+  intros b c H.
+  destruct b.
+  Case "b = true".
+    destruct c.
+    SCase "c = true". inversion H.
+    SCase "c = false". right. apply H.
+  Case "b = false".
+    destruct c.
+    SCase "c = true". left. apply H.
+    SCase "c = false". left. apply H.
+Qed.
 
 Theorem orb_prop : forall b c,
   orb b c = true -> b = true \/ c = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b c H.
+  destruct b.
+  Case "b = true".
+    destruct c.
+    SCase "c = true". left. reflexivity.
+    SCase "c = false". left. reflexivity.
+  Case "b = false".
+    destruct c.
+    SCase "c = true". right. reflexivity.
+    SCase "c = false". inversion H.
+Qed.
 
 Theorem orb_false_elim : forall b c,
   orb b c = false -> b = false /\ c = false.
-Proof. 
-  (* FILL IN HERE *) Admitted.
+Proof.
+  intros b c H.
+  destruct b.
+  Case "b = true".
+    inversion H.
+  Case "b = false".
+    destruct c.
+    SCase "c = true". inversion H.
+    SCase "c = false". apply conj. reflexivity. reflexivity.
+Qed.
 (** [] *)
 
 

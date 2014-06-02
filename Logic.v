@@ -649,21 +649,47 @@ Theorem beq_nat_false : forall n m,
 Proof.
   intros n. unfold not. induction n as [| n'].
   Case "n = 0".
-    intros m H. induction m as [| m'].
+    intros m H. destruct m as [| m'].
     SCase "m = 0". simpl in H. inversion H.
     SCase "m = S m'". intros. inversion H0.
   Case "n = S n'".
-    intros m H. induction m as [| m'].
+    intros m H. destruct m as [| m'].
     SCase "m = 0". intros. inversion H0.
-    SCase "m = S m'". intros. simpl in H. apply IHn' in H. inversion H. inversion H0. reflexivity.
+    SCase "m = S m'". intros. simpl in H. apply IHn' in H. apply H. inversion H0. reflexivity.
 Qed.
 (** [] *)
+
+SearchAbout le.
+(*
+Le.le_refl: forall n : nat, n <= n
+Le.le_trans: forall n m p : nat, n <= m -> m <= p -> n <= p
+Le.le_0_n: forall n : nat, 0 <= n
+Le.le_Sn_0: forall n : nat, ~ S n <= 0
+Le.le_n_0_eq: forall n : nat, n <= 0 -> 0 = n
+Le.le_n_S: forall n m : nat, n <= m -> S n <= S m
+Le.le_n_Sn: forall n : nat, n <= S n
+Le.le_Sn_le: forall n m : nat, S n <= m -> n <= m
+Le.le_S_n: forall n m : nat, S n <= S m -> n <= m
+Le.le_Sn_n: forall n : nat, ~ S n <= n
+Le.le_pred_n: forall n : nat, pred n <= n
+Le.le_pred: forall n m : nat, n <= m -> pred n <= pred m
+Le.le_antisym: forall n m : nat, n <= m -> m <= n -> n = m
+*)
 
 (** **** Exercise: 2 stars, optional (ble_nat_false) *)
 Theorem ble_nat_false : forall n m,
   ble_nat n m = false -> ~(n <= m).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. unfold not. induction n as [| n'].
+  Case "n = 0".
+    intros m H. destruct m as [| m'].
+    SCase "m = 0". inversion H.
+    SCase "m = S m'". simpl in H. inversion H.
+  Case "n = S n'".
+    intros m H. destruct m as [| m'].
+    SCase "m = 0". intros H0. inversion H0.
+    SCase "m = S m'". intros. apply Le.le_S_n in H0. apply IHn' in H. apply H. apply H0.
+Qed.
 (** [] *)
 
 
@@ -757,8 +783,10 @@ Proof.
 
 Theorem dist_not_exists : forall (X:Type) (P : X -> Prop),
   (forall x, P x) -> ~ (exists x, ~ P x).
-Proof. 
-  (* FILL IN HERE *) Admitted.
+Proof.
+  intros X P HA. unfold not. intros HE. induction HE as [e HEE].
+  apply HEE. apply HA.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (not_exists_dist) *)

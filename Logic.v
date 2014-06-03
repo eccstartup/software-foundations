@@ -808,7 +808,14 @@ Proof.
 Theorem dist_exists_or : forall (X:Type) (P Q : X -> Prop),
   (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros X P Q. unfold iff. apply conj.
+  Case "->". intros. inversion H as [e [HEP | HEQ]].
+    left. exists e. apply HEP.
+    right. exists e. apply HEQ.
+  Case "<-". intros. inversion H as [[e HEP] | [e HEQ]].
+    exists e. left. apply HEP.
+    exists e. right. apply HEQ.
+Qed.
 (** [] *)
 
 (* Print dist_exists_or. *)
@@ -851,7 +858,8 @@ Notation "x = y" := (eq x y)
 Lemma leibniz_equality : forall (X : Type) (x y: X), 
  x = y -> forall P : X -> Prop, P x -> P y.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros X x y H. inversion H. intros. apply H2.
+Qed.
 (** [] *)
 
 (** We can use
@@ -970,7 +978,11 @@ Proof.
 Theorem override_shadow' : forall (X:Type) x1 x2 k1 k2 (f : nat->X),
   (override' (override' f k1 x2) k1 x1) k2 = (override' f k1 x1) k2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x1 x2 k1 k2 f. unfold override'.
+  destruct (eq_nat_dec k1 k2).
+  Case "k1 = k2". reflexivity.
+  Case "k1 <> k2". reflexivity.
+Qed.
 (** [] *)
 
 (* ####################################################### *)
@@ -1030,7 +1042,10 @@ Proof.
 Lemma dist_and_or_eq_implies_and : forall P Q R,
        P /\ (Q \/ R) /\ Q = R -> P/\Q.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros P Q R H. inversion H. inversion H1. inversion H2. inversion H3.
+  apply conj. apply H0. rewrite H3 in H4. apply H4.
+  apply conj. apply H0. rewrite H3. apply H4.
+Qed.
 (** [] *)
 
 

@@ -798,7 +798,12 @@ Theorem not_exists_dist :
   forall (X:Type) (P : X -> Prop),
     ~ (exists x, ~ P x) -> (forall x, P x).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  unfold excluded_middle. intros HEM X P. unfold not. intros HNE x.
+  assert (P x \/ ~ P x). apply HEM.
+  inversion H.
+    apply H0.
+    apply ex_falso_quodlibet. apply HNE. unfold not in H0. exists x. apply H0.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (dist_exists_or) *)
@@ -1178,8 +1183,9 @@ Proof.
     does not stutter.) *)
 
 Inductive nostutter:  list nat -> Prop :=
- (* FILL IN HERE *)
-.
+  ns_nil : nostutter []
+| ns_one : forall x, nostutter [x]
+| ns_two : forall x y l, x <> y -> nostutter (y :: l) -> nostutter (x :: (y :: l)).
 
 (** Make sure each of these tests succeeds, but you are free
     to change the proof if the given one doesn't work for you.
@@ -1194,32 +1200,23 @@ Inductive nostutter:  list nat -> Prop :=
     tactics.  *)
 
 Example test_nostutter_1:      nostutter [3;1;4;1;5;6].
-(* FILL IN HERE *) Admitted.
-(* 
   Proof. repeat constructor; apply beq_nat_false; auto. Qed.
-*)
+
 
 Example test_nostutter_2:  nostutter [].
-(* FILL IN HERE *) Admitted.
-(* 
   Proof. repeat constructor; apply beq_nat_false; auto. Qed.
-*)
 
-Example test_nostutter_3:  nostutter [5].
-(* FILL IN HERE *) Admitted.
-(* 
+
+Example test_nostutter_3:  nostutter [5]. 
   Proof. repeat constructor; apply beq_nat_false; auto. Qed.
-*)
 
-Example test_nostutter_4:      not (nostutter [3;1;1;4]).
-(* FILL IN HERE *) Admitted.
-(* 
+
+Example test_nostutter_4:      not (nostutter [3;1;1;4]). 
   Proof. intro.
   repeat match goal with 
     h: nostutter _ |- _ => inversion h; clear h; subst 
   end.
   contradiction H1; auto. Qed.
-*)
 (** [] *)
 
 (** **** Exercise: 4 stars, advanced (pigeonhole principle) *)

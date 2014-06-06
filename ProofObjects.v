@@ -183,10 +183,13 @@ Print eight_is_beautiful'''.
 Theorem six_is_beautiful :
   beautiful 6.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply b_sum with (n:=3) (m:=3).
+  apply b_3.
+  apply b_3.
+Qed.
 
 Definition six_is_beautiful' : beautiful 6 :=
-  (* FILL IN HERE *) admit.
+  b_sum 3 3 b_3 b_3.
 (** [] *)
 
 (** **** Exercise: 1 star (nine_is_beautiful) *)
@@ -195,10 +198,13 @@ Definition six_is_beautiful' : beautiful 6 :=
 Theorem nine_is_beautiful :
   beautiful 9.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply b_sum with (n:=6) (m:=3).
+  apply six_is_beautiful.
+  apply b_3.
+Qed.
 
 Definition nine_is_beautiful' : beautiful 9 :=
-  (* FILL IN HERE *) admit.
+  b_sum 6 3 six_is_beautiful b_3.
 (** [] *)
 
 
@@ -290,13 +296,17 @@ Definition beatiful_plus3'' : Prop :=
 
 Theorem b_times2: forall n, beautiful n -> beautiful (2*n).
 Proof.
-    (* FILL IN HERE *) Admitted.
+  intros n H. simpl.
+  apply b_sum.
+  apply H.
+  rewrite plus_0_r. apply H.
+Qed.
 (** [] *)
 
 (** Now write a corresponding proof object directly. *)
 
 Definition b_times2': forall n, beautiful n -> beautiful (2*n) :=
-  (* FILL IN HERE *) admit.
+  fun (n : nat) => fun (H : beautiful n) => (b_sum n (n + 0) H (b_sum n 0 H b_0)).
 (** [] *)
 
 
@@ -305,8 +315,12 @@ Definition b_times2': forall n, beautiful n -> beautiful (2*n) :=
 (** **** Exercise: 2 stars, optional (gorgeous_plus13_po) *) 
 (** Give a proof object corresponding to the theorem [gorgeous_plus13] from Prop.v *)
 
+
 Definition gorgeous_plus13_po: forall n, gorgeous n -> gorgeous (13+n):=
-   (* FILL IN HERE *) admit.
+  fun (n: nat) => fun (H : gorgeous n) =>
+  (g_plus5 (8 + n)
+    (g_plus5 (3 + n)
+      (g_plus3 n H))).
 (** [] *)
 
 
@@ -319,7 +333,7 @@ Theorem and_example :
   (beautiful 0) /\ (beautiful 3).
 Proof.
   apply conj.
-   (* Case "left". *)  apply b_0.
+   Case "left".  apply b_0.
    (* Case "right". *)  apply b_3.  Qed.
 
 (** Let's take a look at the proof object for the above theorem. *)
@@ -382,8 +396,23 @@ we get: *)
 (** **** Exercise: 2 stars, optional (conj_fact) *)
 (** Construct a proof object demonstrating the following proposition. *)
 
+Theorem conj_fact' : forall P Q R,
+  P /\ Q -> Q /\ R -> P /\ R.
+Proof.
+  intros P Q R HPQ HQR.
+  inversion HPQ as [HP HQ].
+  inversion HQR as [HQ' HR].
+  apply conj. apply HP. apply HR.
+Qed.
+
 Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R :=
-  (* FILL IN HERE *) admit.
+  fun (P Q R : Prop) (HPQ : P /\ Q) (HQR : Q /\ R) =>
+    match HPQ with
+    | conj HP HQ =>
+        match HQR with
+        | conj HQ HR => conj P R HP HR
+        end
+    end.
 (** [] *)
 
 

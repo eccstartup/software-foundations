@@ -425,9 +425,18 @@ Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R :=
     using tactics. (_Hint_: if you make use of previously defined
     theorems, you should only need a single line!) *)
 
+Theorem beautiful_iff_gorgeous' : forall n,
+  beautiful n <-> gorgeous n.
+Proof.
+  intros. unfold iff. apply conj.
+  apply beautiful__gorgeous.
+  apply gorgeous__beautiful.
+Qed.
+
 Definition beautiful_iff_gorgeous :
   forall n, beautiful n <-> gorgeous n :=
-  (* FILL IN HERE *) admit.
+    fun n => conj (beautiful n -> gorgeous n) (gorgeous n -> beautiful n)
+                  (beautiful__gorgeous n)     (gorgeous__beautiful n).
 (** [] *)
 
 
@@ -435,7 +444,13 @@ Definition beautiful_iff_gorgeous :
 (** Try to write down an explicit proof object for [or_commut] (without
     using [Print] to peek at the ones we already defined!). *)
 
-(* FILL IN HERE *)
+Definition or_commut'' : forall P Q : Prop,
+  P \/ Q  -> Q \/ P :=
+    fun (P Q : Prop) (HPQ : P \/ Q) =>
+      match HPQ with
+      | or_introl HP => or_intror Q P HP
+      | or_intror HQ => or_introl Q P HQ
+      end.
 (** [] *)
 
 (** Recall that we model an existential for a property as a pair consisting of 
@@ -458,8 +473,9 @@ Definition snie : some_nat_is_even :=
 (** **** Exercise: 2 stars (ex_beautiful_Sn) *)
 (** Complete the definition of the following proof object: *)
 
+
 Definition p : ex nat (fun n => beautiful (S n)) :=
-(* FILL IN HERE *) admit.
+  ex_intro _ (fun n => beautiful (S n)) 2 b_3.
 (** [] *)
 
 
@@ -522,12 +538,18 @@ Proof.
 (** Redo the proof of the following theorem (from MoreCoq.v) using
 an [apply] of [trans_eq] but _not_ using a [with] clause. *)
 
+Check trans_eq.
+(* forall (X : Type) (n m o : X), n = m -> m = o -> n = o *)
+
 Example trans_eq_example' : forall (a b c d e f : nat),
      [a;b] = [c;d] ->
      [c;d] = [e;f] ->
      [a;b] = [e;f].
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  apply (trans_eq _ [a; b] [c; d] [e; f]).
+  apply H. apply H0.
+Qed.
 (** [] *)
 
 

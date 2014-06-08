@@ -73,7 +73,10 @@ Proof.
 Theorem plus_one_r' : forall n:nat, 
   n + 1 = S n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply nat_ind.
+  Case "0". simpl. reflexivity.
+  Case "S". intros. simpl. apply f_equal. apply H.
+Qed.
 (** [] *)
 
 (** Coq generates induction principles for every datatype defined with
@@ -117,6 +120,9 @@ Inductive rgb : Type :=
   | red : rgb
   | green : rgb
   | blue : rgb.
+
+(* rgb_ind : forall P : rgb -> Prop,
+     P red -> P green -> P blue -> forall y : rgb, P y *)
 Check rgb_ind.
 (** [] *)
 
@@ -172,6 +178,8 @@ Inductive byntree : Type :=
  | bempty : byntree  
  | bleaf  : yesno -> byntree
  | nbranch : yesno -> byntree -> byntree -> byntree.
+
+Check byntree_ind.
 (** [] *)
 
 
@@ -186,8 +194,10 @@ Inductive byntree : Type :=
     Give an [Inductive] definition of [ExSet]: *)
 
 Inductive ExSet : Type :=
-  (* FILL IN HERE *)
-.
+  | con1 : bool -> ExSet
+  | con2 : nat -> ExSet -> ExSet.
+
+Check ExSet_ind.
 (** [] *)
 
 (** What about polymorphic datatypes?
@@ -234,7 +244,13 @@ Check tree_ind.
             (forall m : mytype X, P m -> 
                forall n : nat, P (constr3 X m n)) ->
             forall m : mytype X, P m                   
-*) 
+*)
+
+Inductive mytype (X:Type) : Type :=
+  | constr1 : X -> mytype X
+  | constr2 : nat -> mytype X
+  | constr3 : mytype X -> nat -> mytype X.
+Check mytype_ind.  
 (** [] *)
 
 (** **** Exercise: 1 star, optional (foo) *)
@@ -247,7 +263,13 @@ Check tree_ind.
              (forall f1 : nat -> foo X Y,
                (forall n : nat, P (f1 n)) -> P (quux X Y f1)) ->
              forall f2 : foo X Y, P f2       
-*) 
+*)
+
+Inductive foo (X Y : Type) : Type :=
+  | bar  : X -> foo X Y
+  | baz  : Y -> foo X Y
+  | quux : (nat -> foo X Y) -> foo X Y.
+Check foo_ind. 
 (** [] *)
 
 (** **** Exercise: 1 star, optional (foo') *)
@@ -262,12 +284,12 @@ Inductive foo' (X:Type) : Type :=
      foo'_ind :
         forall (X : Type) (P : foo' X -> Prop),
               (forall (l : list X) (f : foo' X),
-                    _______________________ -> 
-                    _______________________   ) ->
-             ___________________________________________ ->
-             forall f : foo' X, ________________________
+                    P f -> 
+                    P (C1 X l f) ) ->
+              (forall x : X, P (C2 X)) ->
+             forall f : foo' X, P f
 *)
-
+Check foo'_ind.
 (** [] *)
 
 (* ##################################################### *)
@@ -407,7 +429,33 @@ Proof.
     induction, and state the theorem and proof in terms of this
     defined proposition.  *)
 
-(* FILL IN HERE *)
+Check plus_assoc.
+
+Definition P_plus_assoc (n m p : nat) : Prop := 
+  n + (m + p) = n + m + p.
+
+Theorem plus_assoc''' : forall n m p : nat, 
+  P_plus_assoc n m p.
+Proof.
+  induction n as [| n'].
+  Case "n = O". reflexivity.
+  Case "n = S n'".
+    intros. 
+    unfold P_plus_assoc in IHn'. unfold P_plus_assoc. simpl. apply f_equal. apply IHn'. Qed.
+
+Check plus_comm.
+
+Definition P_plus_comm (n m : nat) : Prop :=
+  n + m = m + n.
+
+Theorem plus_comm''' : forall n m : nat,
+  P_plus_comm n m.
+Proof.
+  induction n as [| n'].
+  Case "n = 0". intros. unfold P_plus_comm. simpl. rewrite plus_0_r. reflexivity.
+  Case "n = S n'". intros. unfold P_plus_comm. simpl. rewrite <- plus_n_Sm.
+    unfold P_plus_comm in IHn'. apply f_equal. apply IHn'.
+Qed.
 (** [] *)
 
 
@@ -967,7 +1015,7 @@ Check and_ind.
 (** **** Exercise: 1 star, optional (False_ind_principle) *)
 (** Can you predict the induction principle for falsehood? *)
 
-(* Check False_ind. *)
+Check False_ind.
 (** [] *)
 
 (** Here's the induction principle that Coq generates for existentials: *)

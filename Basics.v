@@ -1,8 +1,15 @@
 (** * Basics: Functional Programming in Coq *)
  
-(* This library definition is included here temporarily 
-   for backward compatibility with Coq 8.3.  
-   Please ignore. *)
+(*
+   [Admitted] is Coq's "escape hatch" that says accept this definition
+   without proof.  We use it to mark the 'holes' in the development
+   that should be completed as part of your homework exercises.  In
+   practice, [Admitted] is useful when you're incrementally developing
+   large proofs.
+
+   As of Coq 8.4 [admit] is in the standard library, but we include
+   it here for backwards compatibility.
+*)
 Definition admit {T: Type} : T.  Admitted.
 
 (* ###################################################################### *)
@@ -367,7 +374,7 @@ Definition minustwo (n : nat) : nat :=
     prints numbers in arabic form by default: *)
 
 Check (S (S (S (S O)))).
-Eval simpl in (minustwo 4).
+Eval compute in (minustwo 4).
 
 (** The constructor [S] has the type [nat -> nat], just like the
     functions [minustwo] and [pred]: *)
@@ -421,7 +428,7 @@ Fixpoint plus (n : nat) (m : nat) : nat :=
 
 (** Adding three to two now gives us five, as we'd expect. *)
 
-Eval simpl in (plus (S (S (S O))) (S (S O))).
+Eval compute in (plus (S (S (S O))) (S (S O))).
 
 (** The simplification that Coq performs to reach this conclusion can
     be visualized as follows: *)
@@ -590,8 +597,8 @@ Proof. reflexivity.  Qed.
     to check that both sides of the [=] simplify to identical values. 
 
     (By the way, it will be useful later to know that
-    [reflexivity] actually does somewhat more than [simpl] -- for
-    example, it tries "unfolding" defined terms, replacing them with
+    [reflexivity] actually does somewhat more simplification than [simpl] 
+    does -- for example, it tries "unfolding" defined terms, replacing them with
     their right-hand sides.  The reason for this difference is that,
     when reflexivity succeeds, the whole goal is finished and we don't
     need to look at whatever expanded expressions [reflexivity] has
@@ -619,8 +626,8 @@ Proof.
 (** The form of this theorem and proof are almost exactly the
     same as the examples above; there are just a few differences.
 
-    First, we've used the keyword keyword [Theorem] instead of
-    [Example].  Indeed, the latter difference is purely a matter of
+    First, we've used the keyword [Theorem] instead of
+    [Example].  Indeed, the difference is purely a matter of
     style; the keywords [Example] and [Theorem] (and a few others,
     including [Lemma], [Fact], and [Remark]) mean exactly the same
     thing to Coq.
@@ -684,7 +691,7 @@ Theorem plus_id_example : forall n m:nat,
 Proof.
   intros n m.   (* move both quantifiers into the context *)
   intros H.     (* move the hypothesis into the context *)
-  rewrite <- H. (* Rewrite the goal using the hypothesis *)
+  rewrite -> H. (* Rewrite the goal using the hypothesis *)
   reflexivity.  Qed.
 
 (** The first line of the proof moves the universally quantified
@@ -954,40 +961,6 @@ Proof.
         converting it to unary and then incrementing. 
 *)
 
-Inductive bin : Type :=
-  | Zero : bin
-  | Twice : bin -> bin
-  | TwiceP1 : bin -> bin.
-
-Fixpoint incr (n : bin) : bin :=
-  match n with
-    | Zero => TwiceP1 Zero
-    | Twice n' => TwiceP1 n'
-    | TwiceP1 n' => Twice (incr n')
-  end.
-
-Fixpoint bin2nat (n : bin) : nat :=
-  match n with
-    | Zero => 0
-    | Twice n' => 2 * (bin2nat n')
-    | TwiceP1 n' => (2 * (bin2nat n')) + 1
-  end.
-
-Example ex1 : bin2nat Zero = 0.
-Proof. reflexivity. Qed.
-
-Example ex2 : bin2nat (incr Zero) = 1.
-Proof. reflexivity. Qed.
-
-Example ex3 : bin2nat (incr (incr Zero)) = 2.
-Proof. simpl. reflexivity. Qed.
-
-Example ex4 : bin2nat (incr (incr (incr Zero))) = 3.
-Proof. simpl. reflexivity. Qed.
-
-Example ex5 : bin2nat (incr (incr (incr (incr Zero)))) = 4.
-Proof. simpl. reflexivity. Qed.
-
 (* FILL IN HERE *)
 (** [] *)
 
@@ -1064,5 +1037,5 @@ Fixpoint fib (n: nat) : nat :=
 *)
 (** [] *)
 
-(* $Date: 2013-07-17 16:19:11 -0400 (Wed, 17 Jul 2013) $ *)
+(* $Date: 2013-12-03 07:45:41 -0500 (Tue, 03 Dec 2013) $ *)
 

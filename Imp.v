@@ -524,14 +524,25 @@ Proof.
     it is sound.  Use the tacticals we've just seen to make the proof
     as elegant as possible. *)
 
+Print bexp.
+
 Fixpoint optimize_0plus_b (b : bexp) : bexp :=
-  (* FILL IN HERE *) admit.
+  match b with
+  | BTrue => BTrue
+  | BFalse => BFalse
+  | BEq a1 a2 => BEq (optimize_0plus a1) (optimize_0plus a2)
+  | BLe a1 a2 => BLe (optimize_0plus a1) (optimize_0plus a2)
+  | BNot b1 => BNot b1
+  | BAnd b1 b2  => BAnd b1 b2
+  end.
 
 
 Theorem optimize_0plus_b_sound : forall b,
   beval (optimize_0plus_b b) = beval b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b. induction b;
+  simpl; repeat (rewrite -> optimize_0plus_sound); reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars, optional (optimizer) *)

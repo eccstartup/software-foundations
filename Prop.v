@@ -447,7 +447,12 @@ Theorem g_times2: forall n, gorgeous n -> gorgeous (2*n).
 Proof.
    intros n H. simpl. 
    induction H.
-   (* FILL IN HERE *) Admitted.
+   Case "g_0". simpl. apply g_0.
+   Case "g_3". simpl. apply g_plus3. apply gorgeous_sum. apply H.
+     apply g_plus3. apply gorgeous_sum. apply H. apply g_0.
+   Case "g_5". simpl. apply g_plus5. apply gorgeous_sum. apply H.
+     apply g_plus5. apply gorgeous_sum. apply H. apply g_0.
+Qed.
 (** [] *)
 
 

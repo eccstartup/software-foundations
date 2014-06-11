@@ -819,10 +819,76 @@ Qed.
 (** Write a relation [bevalR] in the same style as
     [aevalR], and prove that it is equivalent to [beval].*)
 
-(* 
-Inductive bevalR:
-(* FILL IN HERE *)
-*)
+Print bexp.
+
+SearchAbout bool.
+
+Inductive bevalR : bexp -> bool -> Prop :=
+  | E_BTrue : BTrue ||| true
+  | E_BFalse : BFalse ||| false
+  | E_BEq : forall (e1 e2 : aexp) (n1 n2 : nat),
+      (e1 || n1) -> (e2 || n2) -> (BEq e1 e2) ||| (beq_nat n1 n2)
+  | E_BLe : forall (e1 e2 : aexp) (n1 n2 : nat),
+      (e1 || n1) -> (e2 || n2) -> (BLe e1 e2) ||| (ble_nat n1 n2)
+  | E_BNot : forall (e1 : bexp) (b1 : bool),
+      (e1 ||| b1) -> (BNot e1) ||| (negb b1)
+  | E_BAnd : forall (e1 e2 : bexp) (b1 b2 : bool),
+      (e1 ||| b1) -> (e2 ||| b2) -> (BAnd e1 e2) ||| (andb b1 b2)
+
+  where "e '|||' b" := (bevalR e b) : type_scope.
+
+Tactic Notation "bexp_cases" tactic(first) ident(c) :=
+  first;
+  [ Case_aux c "BTrue"
+  | Case_aux c "BFalse"
+  | Case_aux c "BEq"
+  | Case_aux c "BLe"
+  | Case_aux c "BNot"
+  | Case_aux c "BAnd" ].
+
+Tactic Notation "bevalR_cases" tactic(first) ident(c) :=
+  first;
+  [ Case_aux c "E_BTrue"
+  | Case_aux c "E_BFalse"
+  | Case_aux c "E_BEq"
+  | Case_aux c "E_BLe"
+  | Case_aux c "E_BNot"
+  | Case_aux c "E_BAnd" ].
+
+Theorem beval_iff_bevalR : forall r b,
+  (r ||| b) <-> beval r = b.
+Proof.
+  split.
+  Case "->".
+    intros H. bevalR_cases (induction H) SCase; simpl.
+    SCase "E_BTrue". reflexivity.
+    SCase "E_BFalse". reflexivity.
+    SCase "E_BEq".
+      apply aeval_iff_aevalR' in H.
+      apply aeval_iff_aevalR' in H0.
+      subst. reflexivity.
+    SCase "E_BLe".
+      apply aeval_iff_aevalR' in H.
+      apply aeval_iff_aevalR' in H0.
+      subst. reflexivity.    
+    SCase "E_BNot". rewrite IHbevalR. reflexivity.
+    SCase "E_BAnd". rewrite IHbevalR1. rewrite IHbevalR2. reflexivity.
+  Case "<-".
+    generalize dependent b.
+    bexp_cases (induction r) SCase; simpl; intros; subst.
+    SCase "BTrue". apply E_BTrue.
+    SCase "BFalse". apply E_BFalse.
+    SCase "BEq". apply E_BEq with (n1:=_).
+      induction a; simpl; constructor; try apply IHa1; try apply IHa2.
+      induction a0; simpl; constructor; try apply IHa0_1; try apply IHa0_2.
+    SCase "BLe". apply E_BLe.
+      induction a; simpl; constructor; try apply IHa1; try apply IHa2.
+      induction a0; simpl; constructor; try apply IHa0_1; try apply IHa0_2.
+    SCase "BNot". apply E_BNot. apply IHr. reflexivity.
+    SCase "BAnd". apply E_BAnd.
+      apply IHr1. reflexivity.
+      apply IHr2. reflexivity. 
+Qed.
 (** [] *)
 End AExp.
 

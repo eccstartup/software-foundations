@@ -961,7 +961,39 @@ Proof.
         converting it to unary and then incrementing. 
 *)
 
-(* FILL IN HERE *)
+Inductive bin : Type :=
+  | Zero : bin
+  | Twice : bin -> bin
+  | TwiceP1 : bin -> bin.
+
+Fixpoint incr (n : bin) : bin :=
+  match n with
+    | Zero => TwiceP1 Zero
+    | Twice n' => TwiceP1 n'
+    | TwiceP1 n' => Twice (incr n')
+  end.
+
+Fixpoint bin2nat (n : bin) : nat :=
+  match n with
+    | Zero => 0
+    | Twice n' => 2 * (bin2nat n')
+    | TwiceP1 n' => (2 * (bin2nat n')) + 1
+  end.
+
+Example ex1 : bin2nat Zero = 0.
+Proof. reflexivity. Qed.
+
+Example ex2 : bin2nat (incr Zero) = 1.
+Proof. reflexivity. Qed.
+
+Example ex3 : bin2nat (incr (incr Zero)) = 2.
+Proof. reflexivity. Qed.
+
+Example ex4 : bin2nat (incr (incr (incr Zero))) = 3.
+Proof. reflexivity. Qed.
+
+Example ex5 : bin2nat (incr (incr (incr (incr Zero)))) = 4.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (* ###################################################################### *)

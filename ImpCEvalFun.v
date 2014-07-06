@@ -166,13 +166,14 @@ Definition test_ceval (st:state) (c:com) :=
   | Some st => Some (st X, st Y, st Z)
   end.  
 
-(* Eval compute in 
+Eval compute in 
      (test_ceval empty_state 
          (X ::= ANum 2;;
           IFB BLe (AId X) (ANum 1)
             THEN Y ::= ANum 3 
             ELSE Z ::= ANum 4
           FI)).
+(*
    ====>
       Some (2, 0, 4)   *)
 
@@ -181,15 +182,19 @@ Definition test_ceval (st:state) (c:com) :=
    [X] (inclusive: [1 + 2 + ... + X]) in the variable [Y].  Make sure
    your solution satisfies the test that follows. *)
 
-Definition pup_to_n : com := 
-  (* FILL IN HERE *) admit.
+Definition pup_to_n : com :=
+  Y ::= ANum 0;;
+  WHILE (BLe (ANum 1) (AId X)) DO
+    Y ::= (APlus (AId Y) (AId X));;
+    X ::= (AMinus (AId X) (ANum 1))
+  END.
 
-(* 
+Eval compute in test_ceval (update empty_state X 5) pup_to_n.
+
 Example pup_to_n_1 : 
   test_ceval (update empty_state X 5) pup_to_n
   = Some (0, 15, 0).
 Proof. reflexivity. Qed.
-*)
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (peven) *)
